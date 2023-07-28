@@ -1,0 +1,284 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Ticketing System API
+  description: API for the CONMEBOL Ticketing System
+servers:
+  - url: https://api.ticketingsystem.com/v1
+paths:
+  /users:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User created
+        "400":
+          description: Invalid request
+    get:
+      summary: Get a list of all users
+      responses:
+        "200":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request
+  /users/{userId}:
+    get:
+      summary: Get a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request
+        "404":
+          description: User not found
+    put:
+      summary: Update a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: User updated
+        "400":
+          description: Invalid request
+        "404":
+          description: User not found
+    delete:
+      summary: Delete a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted
+        "400":
+          description: Invalid request
+        "404":
+          description: User not found
+  /accreditations:
+    post:
+      summary: Submit a new accreditation request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Accreditation"
+      responses:
+        "201":
+          description: Accreditation request created
+        "400":
+          description: Invalid request
+    get:
+      summary: Get a list of all accreditation requests
+      responses:
+        "200":
+          description: A list of accreditation requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Accreditation"
+        "400":
+          description: Invalid request
+  /accreditations/{accreditationId}:
+    get:
+      summary: Get a specific accreditation request
+      parameters:
+        - name: accreditationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: An accreditation request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accreditation"
+        "400":
+          description: Invalid request
+        "404":
+          description: Accreditation request not found
+    put:
+      summary: Update a specific accreditation request
+      parameters:
+        - name: accreditationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Accreditation"
+      responses:
+        "200":
+          description: Accreditation request updated
+        "400":
+          description: Invalid request
+        "404":
+          description: Accreditation request not found
+    delete:
+      summary: Delete a specific accreditation request
+      parameters:
+        - name: accreditationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Accreditation request deleted
+        "400":
+          description: Invalid request
+        "404":
+          description: Accreditation request not found
+  /documents:
+    post:
+      summary: Upload a new document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Document"
+      responses:
+        "201":
+          description: Document uploaded
+        "400":
+          description: Invalid request
+    get:
+      summary: Get a list of all documents
+      responses:
+        "200":
+          description: A list of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+        "400":
+          description: Invalid request
+  /documents/{documentId}:
+    get:
+      summary: Get a specific document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A document
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid request
+        "404":
+          description: Document not found
+    delete:
+      summary: Delete a specific document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Document deleted
+        "400":
+          description: Invalid request
+        "404":
+          description: Document not found
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, user]
+    Accreditation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        documents:
+          type: array
+          items:
+            type: string
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        accreditationId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [pcrTest, vaccinationCard, visa, photo]
+        file:
+          type: string
+          format: binary
